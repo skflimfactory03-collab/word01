@@ -2,7 +2,7 @@ import random
 import requests
 import telebot
 
-BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE'  # << अपना BotFather का token यहाँ डालें
+BOT_TOKEN = '8447850903:AAFWZcZwT47xlvC8KuNDFCOmKCRj_F6F76U'  # << अपना BotFather का token यहाँ डालें
 bot = telebot.TeleBot(BOT_TOKEN)
 
 WORD_LENGTH = 5
