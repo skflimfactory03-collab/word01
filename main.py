@@ -1,18 +1,21 @@
 import random
+import requests
 import telebot
-from telebot import types
 
-BOT_TOKEN = '8447850903:AAFWZcZwT47xlvC8KuNDFCOmKCRj_F6F76U'  # <-- Put your bot token here
+BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE'  # << अपना BotFather का token यहाँ डालें
 bot = telebot.TeleBot(BOT_TOKEN)
 
-GAME_WORD_LENGTH = 5
+WORD_LENGTH = 5
 MAX_GUESSES = 6
 
-def load_words():
-    with open('words.txt', encoding='utf-8') as f:
-        return [w.strip().upper() for w in f if len(w.strip()) == GAME_WORD_LENGTH and w.strip().isalpha()]
+def get_word_list():
+    # GitHub repo से JSON dictionary fetch करें (3+ लाख words, हम सिर्फ 5-letter लेंगे)
+    url = 'https://raw.githubusercontent.com/dwyl/english-words/master/words_dictionary.json'
+    resp = requests.get(url)
+    words_dict = resp.json()
+    return [w.upper() for w in words_dict if len(w) == WORD_LENGTH and w.isalpha()]
 
-ALL_WORDS = load_words()
+ALL_WORDS = get_word_list()
 
 def get_random_word():
     return random.choice(ALL_WORDS)
@@ -53,7 +56,7 @@ WELCOME_MSG = (
 HELP_MSG = (
     f"How to play:\n"
     f"• Use /new to start a new Wordle game.\n"
-    f"• Guess a {GAME_WORD_LENGTH}-letter word by sending it as a message.\n"
+    f"• Guess a {WORD_LENGTH}-letter word by sending it as a message.\n"
     "• After each guess, you'll see feedback:\n"
     "  🟩 - Correct letter in right spot\n"
     "  🟨 - Letter in word but wrong position\n"
@@ -64,11 +67,7 @@ HELP_MSG = (
 
 @bot.message_handler(commands=['start'])
 def start_cmd(m):
-    bot.send_message(
-        m.chat.id, 
-        WELCOME_MSG, 
-        parse_mode="HTML"
-    )
+    bot.send_message(m.chat.id, WELCOME_MSG, parse_mode="HTML")
 
 @bot.message_handler(commands=['help'])
 def help_cmd(m):
@@ -84,16 +83,12 @@ def new_game(m):
         'active': True,
         'player': m.from_user.id if m.chat.type == 'private' else None
     }
-    bot.send_message(
-        cid, 
-        f"🆕 New Wordle game started!\nGuess the {GAME_WORD_LENGTH}-letter word. Send your guesses (only English):"
-    )
+    bot.send_message(cid, f"🆕 New Wordle game started!\nGuess the {WORD_LENGTH}-letter word. Send your guesses (only English):")
 
 @bot.message_handler(commands=['myscore'])
 def myscore(m):
     uid = m.from_user.id
-    score = scores.get(uid, 0)
-    bot.send_message(m.chat.id, f"🏆 Your score: {score}")
+    bot.send_message(m.chat.id, f"🏆 Your score: {scores.get(uid,0)}")
 
 @bot.message_handler(commands=['leaderboard'])
 def leaderboard(m):
@@ -105,7 +100,7 @@ def leaderboard(m):
     for i, (uid, score) in enumerate(top):
         try:
             user = bot.get_chat_member(m.chat.id, uid).user.first_name
-        except:
+        except Exception:
             user = f"User {uid}"
         msg += f"{i+1}. {user}: {score}\n"
     bot.send_message(m.chat.id, msg, parse_mode="HTML")
@@ -118,7 +113,7 @@ def guess_word(m):
         return
     if m.chat.type == 'private' and games[cid].get('player') != m.from_user.id:
         return
-    if not txt.isalpha() or len(txt) != GAME_WORD_LENGTH or txt not in ALL_WORDS:
+    if not txt.isalpha() or len(txt) != WORD_LENGTH or txt not in ALL_WORDS:
         return
     answer = games[cid]['answer']
     feedback = color_feedback(txt, answer)
@@ -136,3 +131,4 @@ def guess_word(m):
 if __name__ == '__main__':
     print("Bot running...")
     bot.infinity_polling()
+                               
