@@ -16,7 +16,7 @@ if you got version error then use (ubuntu 24)
 
 then edit env Using 
 
-`vi .env`
+`SET BOT TOKEN TO CONFIG.PY`
 
 then run the bot using 
 
