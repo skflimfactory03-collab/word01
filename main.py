@@ -4,7 +4,7 @@ import telebot
 import threading
 import time
 
-BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE'
+BOT_TOKEN = '8447850903:AAFWZcZwT47xlvC8KuNDFCOmKCRj_F6F76U'
 bot = telebot.TeleBot(BOT_TOKEN)
 
 WORD_LENGTH = 5
