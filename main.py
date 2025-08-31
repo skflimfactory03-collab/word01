@@ -65,7 +65,7 @@ WELCOME_MSG = (
 HELP_MSG = (
     "• /new  : Group game \n"
     "• /solo : Solo Game \n"
-    "• /join : play with your Friends 
+    "• /join : play with your Friends \n"
     "• Each round, time reduces (never <15sec)\n"
     "• Only timeout causes OUT, wrong/short/invalid word just errors\n"
     "• Emoji/word trail + leaderboard\n"
