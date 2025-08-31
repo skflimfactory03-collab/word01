@@ -58,7 +58,8 @@ scores = {}
 WELCOME_MSG = (
     "<b>WordSeek 📖</b>\n\n"
     "• Multi-player or Solo Wordle mode!\n"
-    "• Use /new for competitive group or /solo to play alone.\n"
+    "• Use /new for competitive group. \n"
+    "• Use /solo to play alone.\n"
     "• Each round time reduces (never below 15 sec).\n"
     "• Only timeout causes OUT—not invalid word.\n"
 )
