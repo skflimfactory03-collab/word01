@@ -49,8 +49,8 @@ WELCOME_MSG = (
     "A fun and competitive Wordle-style game that you can play directly on Telegram!\n\n"
     "1. Use <b>/new</b> to start a game. Add me to a group with admin permission to play with your friends.\n"
     "2. Use <b>/help</b> to get help on how to play and commands list.\n\n"
-    "🛠 Developed by YOU\n"
-    "Official Group: &lt;your group/link&gt;\n"
+    "🛠 Developed by [Kittu](https://t.me/Kittu_the_meoww) \n"
+    "Official Group: [Support Chat](https://t.me/chuckymusic_support) \n"
 )
 
 HELP_MSG = (
