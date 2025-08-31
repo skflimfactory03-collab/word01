@@ -2,11 +2,11 @@ import random
 import requests
 import telebot
 
-BOT_TOKEN = '8447850903:AAFWZcZwT47xlvC8KuNDFCOmKCRj_F6F76U'
+BOT_TOKEN = '8447850903:AAFWZcZwT47xlvC8KuNDFCOmKCRj_F6F76U'  # यहाँ अपना BotFather TOKEN डालें
 bot = telebot.TeleBot(BOT_TOKEN)
 
 WORD_LENGTH = 5
-MAX_GUESSES = 6
+MAX_GUESSES = 500
 
 def get_word_list():
     url = 'https://raw.githubusercontent.com/dwyl/english-words/master/words_dictionary.json'
@@ -23,13 +23,13 @@ def color_feedback(guess, answer):
     feedback = ""
     answer_chars = list(answer)
     guess_chars = list(guess)
-    for i in range(len(guess_chars)):
+    for i in range(WORD_LENGTH):
         if guess_chars[i] == answer_chars[i]:
             feedback += "🟩"
             answer_chars[i] = None
         else:
             feedback += "*"
-    for i in range(len(guess_chars)):
+    for i in range(WORD_LENGTH):
         if feedback[i] == "🟩":
             continue
         if guess_chars[i] in answer_chars:
@@ -40,6 +40,14 @@ def color_feedback(guess, answer):
             feedback = feedback[:i] + "🟥" + feedback[i+1:]
     return feedback
 
+def dev_button_markup():
+    markup = telebot.types.InlineKeyboardMarkup()
+    markup.add(
+        telebot.types.InlineKeyboardButton("Kittu", url="https://t.me/Kittu_the_meoww"),
+        telebot.types.InlineKeyboardButton("Support", url="https://t.me/chuckymusic_support")
+    )
+    return markup
+
 games = {}
 scores = {}
 
@@ -47,11 +55,8 @@ WELCOME_MSG = (
     "<b>WordSeek 📖</b>\n\n"
     "A fun and competitive Wordle-style game that you can play directly on Telegram!\n\n"
     "1. Use <b>/new</b> to start a game. Add me to a group with admin permission to play with your friends.\n"
-    "2. Use <b>/help</b> to get help on how to play and commands list.\n\n"
-    "🛠 Developed by [Kittu](https://t.me/Kittu_the_meoww) \n"
-    "Official Group: [Support Chat](https://t.me/chuckymusic_support) \n"
+    "2. Use <b>/help</b> to get help on how to play and commands list.\n"
 )
-
 HELP_MSG = (
     f"How to play:\n"
     f"• Use /new to start a new Wordle game.\n"
@@ -66,11 +71,15 @@ HELP_MSG = (
 
 @bot.message_handler(commands=['start'])
 def start_cmd(m):
-    bot.send_message(m.chat.id, WELCOME_MSG, parse_mode="HTML")
+    bot.send_message(
+        m.chat.id, WELCOME_MSG, parse_mode="HTML", reply_markup=dev_button_markup()
+    )
 
 @bot.message_handler(commands=['help'])
 def help_cmd(m):
-    bot.send_message(m.chat.id, HELP_MSG)
+    bot.send_message(
+        m.chat.id, HELP_MSG, parse_mode="HTML", reply_markup=dev_button_markup()
+    )
 
 @bot.message_handler(commands=['new'])
 def new_game(m):
@@ -108,21 +117,30 @@ def leaderboard(m):
 def guess_word(m):
     cid = m.chat.id
     txt = m.text.strip().upper()
+
     if cid not in games or not games[cid]['active']:
         return
     if m.chat.type == 'private' and games[cid].get('player') != m.from_user.id:
         return
-    if not txt.isalpha() or len(txt) != WORD_LENGTH or txt not in ALL_WORDS:
+
+    # 1. Word length check - direct error
+    if not txt.isalpha() or len(txt) != WORD_LENGTH:
+        bot.send_message(cid, "❌ Word must be exactly 5 letters", parse_mode="HTML")
         return
+
+    # 2. Valid word dictionary check - error if invalid
+    if txt not in ALL_WORDS:
+        bot.send_message(cid, f"❌ <b>{txt}</b> is not a valid word", parse_mode="HTML")
+        return
+
     answer = games[cid]['answer']
     feedback = color_feedback(txt, answer)
     games[cid]['guesses'].append((txt, feedback))
-
-    # Show all guesses so far (like screenshot)
-    message = ""
-    for word, fb in games[cid]['guesses']:
-        message += f"<b>{word}</b>\n{fb}\n"
-    bot.send_message(cid, message.strip(), parse_mode="HTML")
+    # Format: emoji left - bold word right (trail style)
+    msg = "\n".join(
+        f"{fb}  <b>{w}</b>" for w, fb in games[cid]['guesses']
+    )
+    bot.send_message(cid, msg, parse_mode="HTML")
 
     if txt == answer:
         bot.send_message(cid, f"🎉 Correct! The answer was: <b>{answer}</b>", parse_mode="HTML")
@@ -134,6 +152,6 @@ def guess_word(m):
         games[cid]['active'] = False
 
 if __name__ == '__main__':
-    print("Bot running...")
+    print("Bot running ...")
     bot.infinity_polling()
-    
+            
