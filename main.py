@@ -2,7 +2,7 @@ import random
 import telebot
 from telebot import types
 
-BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE'  # <-- Put your bot token here
+BOT_TOKEN = '8447850903:AAFWZcZwT47xlvC8KuNDFCOmKCRj_F6F76U'  # <-- Put your bot token here
 bot = telebot.TeleBot(BOT_TOKEN)
 
 GAME_WORD_LENGTH = 5
