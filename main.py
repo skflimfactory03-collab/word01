@@ -1,10 +1,11 @@
+import os
 import random
 import requests
 import telebot
 import threading
 import time
+from config import BOT_TOKEN
 
-BOT_TOKEN = '8447850903:AAFWZcZwT47xlvC8KuNDFCOmKCRj_F6F76U'
 bot = telebot.TeleBot(BOT_TOKEN)
 
 WORD_LENGTH = 5
