@@ -2,14 +2,13 @@ import random
 import requests
 import telebot
 
-BOT_TOKEN = '8447850903:AAFWZcZwT47xlvC8KuNDFCOmKCRj_F6F76U'  # << अपना BotFather का token यहाँ डालें
+BOT_TOKEN = '8447850903:AAFWZcZwT47xlvC8KuNDFCOmKCRj_F6F76U'
 bot = telebot.TeleBot(BOT_TOKEN)
 
 WORD_LENGTH = 5
 MAX_GUESSES = 6
 
 def get_word_list():
-    # GitHub repo से JSON dictionary fetch करें (3+ लाख words, हम सिर्फ 5-letter लेंगे)
     url = 'https://raw.githubusercontent.com/dwyl/english-words/master/words_dictionary.json'
     resp = requests.get(url)
     words_dict = resp.json()
@@ -83,7 +82,7 @@ def new_game(m):
         'active': True,
         'player': m.from_user.id if m.chat.type == 'private' else None
     }
-    bot.send_message(cid, f"🆕 New Wordle game started!\nGuess the {WORD_LENGTH}-letter word. Send your guesses (only English):")
+    bot.send_message(cid, f"🆕 Game started! Guess the {WORD_LENGTH} Letter word!")
 
 @bot.message_handler(commands=['myscore'])
 def myscore(m):
@@ -108,7 +107,7 @@ def leaderboard(m):
 @bot.message_handler(func=lambda m: True)
 def guess_word(m):
     cid = m.chat.id
-    txt = m.text.upper()
+    txt = m.text.strip().upper()
     if cid not in games or not games[cid]['active']:
         return
     if m.chat.type == 'private' and games[cid].get('player') != m.from_user.id:
@@ -118,7 +117,13 @@ def guess_word(m):
     answer = games[cid]['answer']
     feedback = color_feedback(txt, answer)
     games[cid]['guesses'].append((txt, feedback))
-    bot.send_message(cid, f"<code>{txt}</code>\n{feedback}", parse_mode="HTML")
+
+    # Show all guesses so far (like screenshot)
+    message = ""
+    for word, fb in games[cid]['guesses']:
+        message += f"<b>{word}</b>\n{fb}\n"
+    bot.send_message(cid, message.strip(), parse_mode="HTML")
+
     if txt == answer:
         bot.send_message(cid, f"🎉 Correct! The answer was: <b>{answer}</b>", parse_mode="HTML")
         uid = m.from_user.id
@@ -131,4 +136,4 @@ def guess_word(m):
 if __name__ == '__main__':
     print("Bot running...")
     bot.infinity_polling()
-                     
+    
