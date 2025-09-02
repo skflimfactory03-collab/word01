@@ -3,4 +3,4 @@ from dotenv import load_dotenv
 
 load_dotenv()  # loads .env file automatically
 
-BOT_TOKEN = '8447850903:AAFWZcZwT47xlvC8KuNDFCOmKCRj_F6F76U'
+BOT_TOKEN = '7495023640:AAHA854K18m74imKGgkNITQm-Dgny3PEaNI'
